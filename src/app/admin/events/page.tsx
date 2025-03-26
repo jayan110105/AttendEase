@@ -429,7 +429,7 @@ export default function FacultyEventsPage() {
           </DialogHeader>
           <div ref={qrRef} className="flex flex-col items-center justify-center space-y-4 py-4">
             <div className="flex h-64 w-64 items-center justify-center rounded-lg border-2 border-[#1e3a8a]/20 bg-white p-4">
-              <QRCodeSVG value={`https://yourwebsite.com/feedback/${selectedEvent.toLowerCase().replace(/\s+/g, "-")}`} className="h-full w-full" />
+              <QRCodeSVG value={`https://attend-easee.vercel.app/feedback/${selectedEvent.toLowerCase().replace(/\s+/g, "-")}`} className="h-full w-full" />
             </div>
             <p className="text-center text-sm text-muted-foreground">
               Attendees can scan this QR code to provide feedback for the event
