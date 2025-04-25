@@ -304,10 +304,10 @@ export default function FacultyEventsPage() {
     <DashboardLayout role="admin">
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">Manage Events</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Manage Events</h1>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => setIsDialogOpen(true)}>Create Event</Button>
+              <Button onClick={() => setIsDialogOpen(true)}>New Event</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px]">
               <DialogHeader>
