@@ -167,7 +167,7 @@ export default function DashboardLayout({ children, role }: DashboardLayoutProps
             })}
           </nav>
         </aside>
-        <main className="flex-1 overflow-auto bg-[#f8f9fa] p-6">{children}</main>
+        <main className="flex-1 overflow-auto bg-white p-6">{children}</main>
       </div>
     </div>
   )

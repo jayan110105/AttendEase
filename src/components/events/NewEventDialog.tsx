@@ -18,8 +18,8 @@ import { cn } from "@/lib/utils"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { useState } from "react"
-import { Event } from "@/types/event"
-
+import type { Event } from "@/types/event"
+import { Icon } from '@iconify/react';
 interface NewEventDialogProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
@@ -68,7 +68,10 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button onClick={() => onOpenChange(true)}>New Event</Button>
+        <Button variant="secondary" onClick={() => onOpenChange(true)} className="flex items-center font-bold rounded-lg p-3">
+            <Icon icon="mingcute:add-line" className="h-5 w-5" />
+            New Event
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>

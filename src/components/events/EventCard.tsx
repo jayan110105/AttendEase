@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { CalendarIcon, Clock, Edit, EllipsisVertical, QrCode, Trash, Users } from "lucide-react"
+import { EllipsisVertical, QrCode} from "lucide-react"
 import { format } from "date-fns"
+import { Icon } from '@iconify/react';
 import Link from "next/link"
 import type { Event } from "@/types/event"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 
 interface EventCardProps {
   event: Event
@@ -13,61 +15,66 @@ interface EventCardProps {
 
 export const EventCard = ({ event, onSelectFeedbackQR }: EventCardProps) => {
   return (
-    <Card className="rounded-lg border p-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-1">
-          <h3 className="font-medium">{event.title}</h3>
-          <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <CalendarIcon className="mr-1 h-3 w-3" />
-              {format(event.datetime, "MMMM d, yyyy 'at' h:mm a")}
-            </div>
-            <div className="flex items-center">
-              <Clock className="mr-1 h-3 w-3" />
-              {event.duration}
-            </div>
-            <div className="flex items-center">
-              <Users className="mr-1 h-3 w-3" />
-              {event.registeredCount} registered
-            </div>
-          </div>
-          <p className="text-sm">{event.location}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline">
-            View Details
-          </Button>
-          <Link href={`/admin/attend/${event.title.toLowerCase().replace(/\s+/g, '-')}`}>
-            <Button size="sm">
-              Attendance
-            </Button>
-          </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
+    <Card className="relative rounded-lg border p-4">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost" className="absolute top-2 right-2 p-2">
                 <EllipsisVertical className="h-4 w-4" />
                 <span className="sr-only">More options</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Edit className="mr-2 h-4 w-4" />
+            </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="left" align="start">
+            <DropdownMenuItem>
+                <Icon icon="solar:eye-bold" className="mr-2 h-4 w-4" />
+                View
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+                <Icon icon="solar:pen-bold" className="mr-2 h-4 w-4" />
                 Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => onSelectFeedbackQR(event.title)}
-              >
-                <QrCode className="mr-2 h-4 w-4" />
-                Feedback QR
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">
-                <Trash className="mr-2 h-4 w-4" />
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive hover:text-destructive focus:text-destructive">
+                <Icon icon="solar:trash-bin-trash-bold" className="mr-2 h-4 w-4" />
                 Cancel
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>  
+      <CardHeader className="flex flex-col items-start space-y-2 p-4">
+        <CardTitle className="text-lg font-medium hover:underline" >{event.title}</CardTitle>
+        <div className="flex items-center text-sm text-muted-foreground">
+            <Icon icon="solar:calendar-date-bold" className="mr-1 h-4 w-4" />
+            {format(event.datetime, "MMMM d, yyyy 'at' h:mm a")}
         </div>
-      </div>
+        <div className="flex items-center text-sm text-primary">
+            <Icon icon="solar:users-group-rounded-bold" className="mr-1 h-4 w-4" />
+            {event.registeredCount} registered
+        </div>
+      </CardHeader>
+
+      <Separator/>
+
+      <CardContent className="p-4 pb-2">
+        <div className="grid grid-cols-2 gap-3 pb-4" >
+            <div className="flex items-center text-sm text-muted-foreground">
+                <Icon icon="solar:clock-circle-bold" className="mr-1 h-4 w-4" />
+                {event.duration}
+            </div>
+            <div className="flex items-center text-sm text-muted-foreground">
+                <Icon icon="mingcute:location-fill" className="mr-1 h-4 w-4" />
+                {event.location}
+            </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-2">
+            <Link href={`/admin/attend/${event.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                <Button size="sm">
+                    Attendance
+                </Button>
+            </Link> 
+            <Button variant="outline" size="icon" onClick={() => onSelectFeedbackQR(event.title)}>
+                <QrCode className="h-4 w-4" />
+            </Button>
+        </div>
+      </CardContent>
     </Card>
   )
 } 

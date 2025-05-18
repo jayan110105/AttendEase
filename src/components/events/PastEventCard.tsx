@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { CalendarIcon, Users } from "lucide-react"
-import { PastEvent } from "@/types/event"
+import type { PastEvent } from "@/types/event"
 
 interface PastEventCardProps {
   event: PastEvent

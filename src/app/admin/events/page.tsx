@@ -84,23 +84,14 @@ export default function FacultyEventsPage() {
           </TabsList>
 
           <TabsContent value="upcoming" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Upcoming Events</CardTitle>
-                <CardDescription>Manage your upcoming workshops and seminars</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {upcomingEvents
-                    .sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
-                    .map((event, index) => (
-                      <EventCard key={index} event={event} onSelectFeedbackQR={handleFeedbackQR}/>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-3 gap-4">
+              {upcomingEvents
+                .sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
+                .map((event, index) => (
+                  <EventCard key={index} event={event} onSelectFeedbackQR={handleFeedbackQR}/>
+                ))}
+            </div>
           </TabsContent>
-
           <TabsContent value="past" className="space-y-4">
             <Card>
               <CardHeader>
