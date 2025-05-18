@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import DashboardLayout from "@/components/dashboard-layout"
 import type { Event, PastEvent } from "@/types/event"
 import { EventCard } from "@/components/events/EventCard"
 import { PastEventCard } from "@/components/events/PastEventCard"
@@ -66,7 +65,7 @@ export default function FacultyEventsPage() {
   }
 
   return (
-    <DashboardLayout role="admin">
+    <>
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold tracking-tight">Manage Events</h1>
@@ -115,7 +114,7 @@ export default function FacultyEventsPage() {
         onOpenChange={setShowFeedbackQR}
         selectedEvent={selectedEvent}
       />
-    </DashboardLayout>
+    </>
   )
 }
 

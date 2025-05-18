@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { BarChart, LineChart, XAxis, Line, Bar, CartesianGrid } from "recharts"
 import { Button } from "@/components/ui/button"
 import { Filter, Import, Users, UserCheck, UserX, FileText } from "lucide-react"
-import DashboardLayout from "@/components/dashboard-layout"
 import type { ChartConfig } from "@/components/ui/chart"
 import {
   ChartContainer,
@@ -47,7 +46,6 @@ export default function AdminDashboard() {
   const [classFilter, setClassFilter] = useState("school")
 
   return (
-    <DashboardLayout role="admin">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
@@ -300,7 +298,6 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
   )
 }
 
