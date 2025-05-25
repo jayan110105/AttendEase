@@ -92,19 +92,11 @@ export default function FacultyEventsPage() {
             </div>
           </TabsContent>
           <TabsContent value="past" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Past Events</CardTitle>
-                <CardDescription>View your completed workshops and seminars</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {pastEvents.map((event, index) => (
-                    <PastEventCard key={index} event={event} />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-3 gap-4">
+              {pastEvents.map((event, index) => (
+                <PastEventCard key={index} event={event} />
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
       </div>

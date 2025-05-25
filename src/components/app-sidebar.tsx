@@ -21,42 +21,41 @@ export default function AppSidebar() {
   const currentRole = roleInfo.admin
 
   return (
-      <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-2 px-4 py-6">
-            <Link href="/admin" className="flex items-center gap-2 font-semibold">
-              <div className="flex items-center justify-center rounded-full bg-white text-[#1e3a8a]">
-                <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
-              </div>
-              <span>{currentRole.name}</span>
-            </Link>
-          </div>
-        </SidebarHeader>
-        
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-              {currentRole.links.map((link) => (
-                <SidebarMenuItem key={link.href}>
-                  <SidebarMenuButton asChild>
-                    <a href={link.href}>
-                      <link.icon className="h-6 w-6" />
-                      <span>{link.label}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
+    <Sidebar>
+      <SidebarHeader>
+        <div className="flex items-center gap-2 px-4 py-6">
+          <Link href="/admin" className="flex items-center gap-2 font-semibold">
+            <div className="flex items-center justify-center rounded-full bg-white text-[#1e3a8a]">
+              <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
+            </div>
+          </Link>
+        </div>
+      </SidebarHeader>
+      
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+            {currentRole.links.map((link) => (
+              <SidebarMenuItem key={link.href}>
+                <SidebarMenuButton asChild className="[&_svg]:size-6">
+                  <a href={link.href}>
+                    <link.icon/>
+                    <span>{link.label}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-        <SidebarFooter className="mt-auto px-4 py-4">
-          <Button variant="ghost" size="icon" className="lg:hidden">
-            Close
-          </Button>
-        </SidebarFooter>
-      </Sidebar>
+      <SidebarFooter className="mt-auto px-4 py-4">
+        <Button variant="ghost" size="icon" className="lg:hidden">
+          Close
+        </Button>
+      </SidebarFooter>
+    </Sidebar>
   )
 }
