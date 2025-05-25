@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useRef, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { Event, PastEvent } from "@/types/event"
 import { EventCard } from "@/components/events/EventCard"
@@ -13,7 +12,26 @@ export default function FacultyEventsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [showFeedbackQR, setShowFeedbackQR] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState("")
+  const [activeTab, setActiveTab] = useState("upcoming")
+  const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0 })
   
+  const upcomingRef = useRef<HTMLButtonElement>(null)
+  const pastRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    const updateSlider = () => {
+      const activeRef = activeTab === "upcoming" ? upcomingRef : pastRef
+      if (activeRef.current) {
+        const { offsetLeft, offsetWidth } = activeRef.current
+        setSliderStyle({ left: offsetLeft, width: offsetWidth })
+      }
+    }
+    
+    updateSlider()
+    // Add a small delay to ensure DOM is updated
+    setTimeout(updateSlider, 10)
+  }, [activeTab])
+
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([
     {
       title: "Introduction to Machine Learning",
@@ -76,14 +94,35 @@ export default function FacultyEventsPage() {
           />
         </div>
 
-        <Tabs defaultValue="upcoming" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-            <TabsTrigger value="past">Past</TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="upcoming" className="space-y-4" onValueChange={setActiveTab}>
+          <div className="relative">
+            <TabsList className="relative bg-transparent p-0 h-auto gap-6">
+              <TabsTrigger 
+                ref={upcomingRef}
+                value="upcoming" 
+                className="relative bg-transparent border-0 shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-2"
+              >
+                Upcoming
+              </TabsTrigger>
+              <TabsTrigger 
+                ref={pastRef}
+                value="past"
+                className="relative bg-transparent border-0 shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none px-0 py-2"
+              >
+                Past
+              </TabsTrigger>
+            </TabsList>
+            <div 
+              className="absolute bottom-0 h-[3px] bg-black transition-all duration-300 ease-in-out"
+              style={{
+                left: `${sliderStyle.left}px`,
+                width: `${sliderStyle.width}px`
+              }}
+            />
+          </div>
 
           <TabsContent value="upcoming" className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {upcomingEvents
                 .sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
                 .map((event, index) => (
@@ -92,7 +131,7 @@ export default function FacultyEventsPage() {
             </div>
           </TabsContent>
           <TabsContent value="past" className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {pastEvents.map((event, index) => (
                 <PastEventCard key={index} event={event} />
               ))}

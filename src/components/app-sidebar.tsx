@@ -23,7 +23,7 @@ export default function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-6">
+        <div className="flex items-center gap-2 pr-0 pl-5 pt-3 pb-0">
           <Link href="/admin" className="flex items-center gap-2 font-semibold">
             <div className="flex items-center justify-center rounded-full bg-white text-[#1e3a8a]">
               <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
@@ -32,17 +32,17 @@ export default function AppSidebar() {
         </div>
       </SidebarHeader>
       
-      <SidebarContent>
-        <SidebarGroup>
+      <SidebarContent className="px-4">
+        <SidebarGroup className="px-0">
           <SidebarGroupContent>
             <SidebarMenu>
             {currentRole.links.map((link) => (
               <SidebarMenuItem key={link.href}>
-                <SidebarMenuButton asChild className="[&_svg]:size-6">
-                  <a href={link.href}>
+                <SidebarMenuButton asChild className="[&_svg]:size-6 h-11">
+                  <Link href={link.href} className="flex items-center gap-3 rounded-md px-3 py-4 text-sm font-medium">
                     <link.icon/>
                     <span>{link.label}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
