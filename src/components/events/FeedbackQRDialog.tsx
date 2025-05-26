@@ -2,14 +2,13 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Download, Share2 } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react"
 import { useRef } from "react"
+import { Icon } from '@iconify/react';
 
 interface FeedbackQRDialogProps {
   isOpen: boolean
@@ -88,29 +87,23 @@ export const FeedbackQRDialog = ({ isOpen, onOpenChange, selectedEvent }: Feedba
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[370px] gap-6">
         <DialogHeader>
-          <DialogTitle>Feedback QR Code</DialogTitle>
-          <DialogDescription>
-            Share this QR code with attendees to collect feedback for {selectedEvent}
-          </DialogDescription>
+          <DialogTitle className="text-lg font-semibold tracking-tight">Feedback QR Code</DialogTitle>
         </DialogHeader>
-        <div ref={qrRef} className="flex flex-col items-center justify-center space-y-4 py-4">
+        <div ref={qrRef} className="flex flex-col items-center justify-center space-y-4">
           <div className="flex h-64 w-64 items-center justify-center rounded-lg border-2 border-[#1e3a8a]/20 bg-white p-4">
             <QRCodeSVG value={`https://attend-easee.vercel.app/feedback/${selectedEvent.toLowerCase().replace(/\s+/g, "-")}`} className="h-full w-full" />
           </div>
-          <p className="text-center text-sm text-muted-foreground">
-            Attendees can scan this QR code to provide feedback for the event
-          </p>
         </div>
         <DialogFooter className="flex flex-col sm:flex-row sm:justify-between sm:space-x-2">
-          <Button variant="outline" className="mb-2 gap-2 sm:mb-0" onClick={downloadQRCode}>
-            <Download className="h-4 w-4" />
-            Download QR
+          <Button variant="outline" className="font-bold px-2 py-5 mb-2 gap-2 [&_svg]:size-6 sm:mb-0" onClick={downloadQRCode}>
+            <Icon icon="solar:round-arrow-down-bold" className="h-4 w-4" />
+            Download
           </Button>
-          <Button className="gap-2" onClick={shareQRCode}>
-            <Share2 className="h-4 w-4" />
-            Share QR Code
+          <Button className="font-bold px-2 py-5 mb-2 gap-2 sm:mb-0 [&_svg]:size-5" onClick={shareQRCode}>
+            <Icon icon="solar:share-bold" className="h-4 w-4" />
+            Share
           </Button>
         </DialogFooter>
       </DialogContent>
