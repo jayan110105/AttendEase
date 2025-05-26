@@ -3,7 +3,6 @@ import { Calendar } from "@/components/ui/calendar"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -15,7 +14,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { useState } from "react"
 import type { Event } from "@/types/event"
@@ -73,15 +71,14 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
             New Event
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
-        <DialogHeader>
-          <DialogTitle>Create New Event</DialogTitle>
-          <DialogDescription>Fill in the details to create a new workshop or seminar.</DialogDescription>
+      <DialogContent className="sm:max-w-[444px] !rounded-xl">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-lg font-semibold tracking-tight">Create New Event</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-6 pb-4">
           <div className="grid gap-2">
-            <Label htmlFor="title">Event Title</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Enter event title" />
+            <Label htmlFor="title">Title</Label>
+            <Input className="py-2" id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Enter event title" />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
@@ -94,10 +91,10 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
-                    className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
+                    className={cn("w-full justify-between text-left font-normal", !date && "text-muted-foreground")}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? format(date, "PPP") : "Select date"}
+                    <Icon icon="solar:calendar-date-bold" className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -127,16 +124,16 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="location">Location</Label>
-              <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Room/Hall" />
+              <Input className="py-2" id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Room/Hall" />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="capacity">Capacity</Label>
-              <Input id="capacity" type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} placeholder="Max participants" />
+              <Input className="py-2" id="capacity" type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} placeholder="Max participants" />
             </div>
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" onClick={handleCreateEvent}>Create Event</Button>
+          <Button type="button" onClick={handleCreateEvent} className="font-medium py-5">Create</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
