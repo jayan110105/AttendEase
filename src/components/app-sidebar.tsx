@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import DashboardIcon from "@/components/icons/DashboardIcon"
 import CalendarIcon from "@/components/icons/CalendarIcon"
 import FileIcon from "@/components/icons/FileIcon"
+import ProfileIcon from "@/components/icons/ProfileIcon"
 import { cn } from "@/lib/utils"
 
 export default function AppSidebar() {
@@ -20,6 +21,7 @@ export default function AppSidebar() {
       links: [
         { href: "/admin", label: "Overview", icon: DashboardIcon },
         { href: "/admin/events", label: "Events", icon: CalendarIcon },
+        { href: "/admin/attend/1234", label: "Attendance", icon: ProfileIcon },
         { href: "/admin/feedback/1234", label: "Feedback", icon: FileIcon },
       ],
     },

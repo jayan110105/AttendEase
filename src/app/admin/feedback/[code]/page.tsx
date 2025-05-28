@@ -2,14 +2,14 @@
 
 import { useState } from "react"
 import { useParams } from "next/navigation"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
-import { CheckCircle2, MessageSquare, User, UserCheck, Users, Phone } from "lucide-react"
+import { Icon } from "@iconify/react"
+import { cn } from "@/lib/utils"
 
 export default function FeedbackPage() {
   const params = useParams()
@@ -28,8 +28,15 @@ export default function FeedbackPage() {
     phoneNumber?: string
   }>(null)
   const [rating, setRating] = useState<number>(0)
+  const [hoveredRating, setHoveredRating] = useState<number>(0)
   const [feedback, setFeedback] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
+
+  const steps = [
+    { id: 1, name: "Select Role", status: step === "role" ? "current" : (step === "identification" || step === "feedback" || step === "success") ? "complete" : "upcoming" },
+    { id: 2, name: "Enter ID", status: step === "identification" ? "current" : (step === "feedback" || step === "success") ? "complete" : "upcoming" },
+    { id: 3, name: "Give Feedback", status: step === "feedback" ? "current" : step === "success" ? "complete" : "upcoming" },
+  ]
 
   const handleRoleSelect = (selectedRole: "faculty" | "student" | "guest") => {
     setRole(selectedRole)
@@ -158,20 +165,8 @@ export default function FeedbackPage() {
     setIdentificationNumber("")
     setUserData(null)
     setRating(0)
+    setHoveredRating(0)
     setFeedback("")
-  }
-
-  const getRoleIcon = () => {
-    switch (role) {
-      case "faculty":
-        return <UserCheck className="h-5 w-5" />
-      case "student":
-        return <User className="h-5 w-5" />
-      case "guest":
-        return <Phone className="h-5 w-5" />
-      default:
-        return <User className="h-5 w-5" />
-    }
   }
 
   // Get event name from code (in a real app, this would come from the API)
@@ -189,210 +184,268 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div className="flex flex-col">
-        <h1 className="text-2xl font-semibold tracking-tight">Feedback</h1>
+    <div className="flex flex-col gap-4">
+        
+        {/* Progress Steps */}
+        <div className="mb-12">
+          <div className="flex items-center justify-center">
+            {steps.map((stepItem, stepIdx) => (
+              <div key={stepItem.id} className="flex items-center">
+                <div className="flex flex-col items-center">
+                  <div
+                    className={cn(
+                      "flex h-12 w-12 items-center justify-center rounded-full border-2 text-sm font-semibold",
+                      stepItem.status === "complete"
+                        ? "border-primary bg-primary text-white"
+                        : stepItem.status === "current"
+                        ? "border-primary bg-primary text-white"
+                        : "border-gray-300 bg-white text-gray-500"
+                    )}
+                  >
+                    {stepItem.id}
+                  </div>
+                  <div className="mt-2 text-center">
+                    <div
+                      className={cn(
+                        "text-sm font-medium",
+                        stepItem.status === "complete" || stepItem.status === "current"
+                          ? "text-primary"
+                          : "text-gray-500"
+                      )}
+                    >
+                      {stepItem.name}
+                    </div>
+                  </div>
+                </div>
+                {stepIdx < steps.length - 1 && (
+                  <div
+                    className={cn(
+                      "mx-8 h-0.5 w-24",
+                      stepItem.status === "complete"
+                        ? "bg-primary"
+                        : "bg-gray-300"
+                    )}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
         {step === "role" && (
-            <Card className="w-full max-w-md shadow-sm">
-              <CardHeader className="space-y-1">
-                <CardTitle className="text-2xl">Select Your Role</CardTitle>
-                <CardDescription>Choose your role to proceed</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <RadioGroup value={role} onValueChange={(value) => setRole(value as "faculty" | "student" | "guest")} className="flex flex-col space-y-3">
-                  <div className="flex items-center space-x-3 rounded-md border p-4 hover:bg-muted/50">
-                  <RadioGroupItem value="faculty" id="faculty"/>
-                  <Label htmlFor="faculty" className="flex flex-1 items-center gap-2 font-normal">
-                    <UserCheck className="h-5 w-5" />
-                    <div>
-                    <p className="font-medium">Faculty</p>
-                    <p className="text-sm text-muted-foreground">For professors and instructors</p>
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-8 text-center">
+              <h2 className="text-2xl font-bold text-gray-900">Select Your Role</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <Card 
+                className={cn(
+                  "cursor-pointer border-2 transition-all hover:shadow-lg",
+                  role === "student" ? "border-primary bg-primary/10" : "border-gray-200"
+                )}
+                onClick={() => setRole("student")}
+              >
+                <CardContent className="p-8 text-center">
+                  <div className="mb-4 flex justify-center">
+                    <div className="rounded-full bg-primary/10 p-4">
+                      <Icon icon="solar:user-bold" className="h-8 w-8 text-primary" />
                     </div>
-                  </Label>
                   </div>
-                  <div className="flex items-center space-x-3 rounded-md border p-4 hover:bg-muted/50">
-                  <RadioGroupItem value="student" id="student" />
-                  <Label htmlFor="student" className="flex flex-1 items-center gap-2 font-normal">
-                    <User className="h-5 w-5"/>
-                    <div>
-                    <p className="font-medium">Student</p>
-                    <p className="text-sm text-muted-foreground">For enrolled students</p>
+                  <h3 className="mb-2 text-xl font-bold">Student</h3>
+                  <p className="text-gray-600">For enrolled students</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className={cn(
+                  "cursor-pointer border-2 transition-all hover:shadow-lg",
+                  role === "faculty" ? "border-primary bg-primary/10" : "border-gray-200"
+                )}
+                onClick={() => setRole("faculty")}
+              >
+                <CardContent className="p-8 text-center">
+                  <div className="mb-4 flex justify-center">
+                    <div className="rounded-full bg-primary/10 p-4">
+                      <Icon icon="solar:user-check-bold" className="h-8 w-8 text-primary" />
                     </div>
-                  </Label>
                   </div>
-                  <div className="flex items-center space-x-3 rounded-md border p-4 hover:bg-muted/50">
-                  <RadioGroupItem value="guest" id="guest"/>
-                  <Label htmlFor="guest" className="flex flex-1 items-center gap-2 font-normal">
-                    <Users className="h-5 w-5" />
-                    <div>
-                    <p className="font-medium">Guest</p>
-                    <p className="text-sm text-muted-foreground">For visitors and external participants</p>
+                  <h3 className="mb-2 text-xl font-bold">Faculty</h3>
+                  <p className="text-gray-600">For teaching staff</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className={cn(
+                  "cursor-pointer border-2 transition-all hover:shadow-lg",
+                  role === "guest" ? "border-primary bg-primary/10" : "border-gray-200"
+                )}
+                onClick={() => setRole("guest")}
+              >
+                <CardContent className="p-8 text-center">
+                  <div className="mb-4 flex justify-center">
+                    <div className="rounded-full bg-primary/10 p-4">
+                      <Icon icon="solar:users-group-rounded-bold" className="h-8 w-8 text-primary" />
                     </div>
-                  </Label>
                   </div>
-                </RadioGroup>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  className="w-full" 
-                  onClick={() => role ? handleRoleSelect(role) : null}
-                  disabled={!role}
-                >
-                  Continue
-                </Button>
-              </CardFooter>
-            </Card>
+                  <h3 className="mb-2 text-xl font-bold">Guest</h3>
+                  <p className="text-gray-600">For visitors</p>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="mt-8 flex justify-end">
+              <Button 
+                size="lg"
+                onClick={() => role ? handleRoleSelect(role) : null}
+                disabled={!role}
+                className="bg-primary hover:bg-primary/90 font-bold h-12 text-base"
+              >
+                Continue
+                <Icon icon="solar:arrow-right-linear" className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         )}
 
         {step === "identification" && (
-          <Card className="w-full max-w-md border-none shadow-sm">
-            <CardHeader className="space-y-1">
-              <CardTitle className="text-2xl">Verify Your Identity</CardTitle>
-              <CardDescription>
-                Enter your {getIdentificationLabel().toLowerCase()} to proceed
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2 rounded-md bg-gray-50 p-3">
-                {role === "faculty" && <UserCheck className="h-5 w-5" />}
-                {role === "student" && <User className="h-5 w-5" />}
-                {role === "guest" && <Users className="h-5 w-5" />}
-                <span className="font-medium">
-                  {role === "faculty" ? "Faculty" : role === "student" ? "Student" : "Guest"}
-                </span>
+          <div className="w-full max-w-lg mx-auto">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900">Verify Your Identity</h2>
+            </div>
+            
+            <div>
+              <div className="p-8">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="identification" className="text-base font-medium">{getIdentificationLabel()}</Label>
+                    <Input
+                      id="identification"
+                      placeholder={getIdentificationPlaceholder()}
+                      value={identificationNumber}
+                      onChange={(e) => setIdentificationNumber(e.target.value)}
+                      className="mt-2 h-12 text-base border-gray-300 focus:border-primary focus:ring-primary rounded-lg"
+                      type={role === "guest" ? "tel" : "text"}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="identification">{getIdentificationLabel()}</Label>
-                <Input
-                  id="identification"
-                  placeholder={getIdentificationPlaceholder()}
-                  value={identificationNumber}
-                  onChange={(e) => setIdentificationNumber(e.target.value)}
-                  className="border-[#1e3a8a]/20"
-                  type={role === "guest" ? "tel" : "text"}
-                />
+              
+              <div className="flex justify-between gap-3 p-6 rounded-b-lg font-bold">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep("role")}
+                  className="h-12 text-base"
+                >
+                  Back
+                </Button>
+                <Button
+                  className="bg-primary hover:bg-primary/90 h-12 text-base font-bold"
+                  onClick={handleVerifyIdentification}
+                  disabled={isLoading}
+                  size="lg"
+                >
+                  {isLoading ? "Verifying..." : "Continue"}
+                  <Icon icon="solar:arrow-right-linear" className="ml-2 h-4 w-4" />
+                </Button>
               </div>
-            </CardContent>
-            <CardFooter className="flex flex-col space-y-2 bg-gray-50 px-6 py-4">
-              <Button
-                className="w-full"
-                onClick={handleVerifyIdentification}
-                disabled={isLoading}
-              >
-                {isLoading ? "Verifying..." : "Continue"}
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setStep("role")}
-              >
-                Back
-              </Button>
-            </CardFooter>
-          </Card>
+            </div>
+          </div>
         )}
-            {step === "feedback" && userData && (
-              <Card className="w-full max-w-md border-none shadow-sm">
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl">Provide Feedback</CardTitle>
-                  <CardDescription>
-                    Share your thoughts about {getEventName()}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="rounded-lg bg-gray-50 p-4">
-                    <div className="mb-2 flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
-                        {getRoleIcon()}
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{userData.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {role === "faculty" ? "MAHE ID: " : role === "student" ? "Reg No: " : "Phone: "}
-                          {userData.idNumber}
-                        </p>
-                      </div>
+
+        {step === "feedback" && userData && (
+          <div className="w-full mx-auto max-w-xl">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-900">Provide Feedback</h2>
+            </div>
+            
+            <div>
+              <div className="p-8">
+                <div className="space-y-6">
+                  <div>
+                    <Label className="mb-3 block text-base font-medium">How would you rate this event?</Label>
+                    <div className="flex items-center gap-2 rounded-lg p-4">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => handleRatingChange(star)}
+                          onMouseEnter={() => setHoveredRating(star)}
+                          onMouseLeave={() => setHoveredRating(0)}
+                          className={`text-4xl transition-all hover:scale-110 ${
+                            star <= (hoveredRating || rating) ? "text-yellow-500" : "text-gray-300"
+                          }`}
+                        >
+                          <Icon icon="solar:star-bold" className="h-8 w-8" />
+                        </button>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="mb-2 block">How would you rate this event?</Label>
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => handleRatingChange(star)}
-                            className={`text-2xl ${star <= rating ? "text-yellow-500" : "text-gray-300"}`}
-                          >
-                            ★
-                          </button>
-                        ))}
-                        <span className="ml-2 text-sm text-muted-foreground">
-                          {rating > 0 ? `${rating}/5` : "Select rating"}
-                        </span>
-                      </div>
-                    </div>
+                  <div>
+                    <Label htmlFor="feedback" className="text-base font-medium">Comments</Label>
+                    <Textarea
+                      id="feedback"
+                      placeholder="Share your experience, what you liked, and suggestions for improvement..."
+                      value={feedback}
+                      onChange={(e) => setFeedback(e.target.value)}
+                      className="mt-2 min-h-[120px] border-gray-300 focus:border-primary focus:ring-primary rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-between gap-3 p-6">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep("identification")}
+                  disabled={isLoading}
+                  className="h-12 text-base font-bold"
+                >
+                  Back
+                </Button>
+                <Button
+                  className="bg-primary hover:bg-primary/90 h-12 text-base font-bold"
+                  onClick={handleSubmitFeedback}
+                  disabled={isLoading}
+                  size="lg"
+                >
+                  {isLoading ? "Submitting..." : "Submit Feedback"}
+                  <Icon icon="solar:arrow-right-linear" className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
-                    <div className="space-y-2">
-                      <Label htmlFor="feedback">Comments (Optional)</Label>
-                      <Textarea
-                        id="feedback"
-                        placeholder="Share your experience, what you liked, and suggestions for improvement..."
-                        value={feedback}
-                        onChange={(e) => setFeedback(e.target.value)}
-                        className="min-h-[120px] border-[#1e3a8a]/20"
-                      />
-                    </div>
+        {step === "success" && (
+          <div className="mx-auto max-w-2xl">
+            <div>
+              <div className="p-12 text-center">
+                <div className="mb-6 flex justify-center">
+                  <div className="rounded-full bg-primary/10 p-6">
+                    <Icon icon="solar:check-circle-bold" className="h-16 w-16 text-primary" />
                   </div>
-                </CardContent>
-                <CardFooter className="flex flex-col space-y-2 bg-gray-50 px-6 py-4">
-                  <Button
-                    className="w-full"
-                    onClick={handleSubmitFeedback}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Submitting..." : "Submit Feedback"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => setStep("identification")}
-                    disabled={isLoading}
-                  >
-                    Back
-                  </Button>
-                </CardFooter>
-              </Card>
-            )}
-
-            {step === "success" && (
-              <Card className="w-full max-w-md border-none shadow-sm">
-                <CardHeader className="space-y-1">
-                  <CardTitle className="text-2xl">Feedback Submitted</CardTitle>
-                  <CardDescription>Thank you for providing your feedback</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col items-center justify-center space-y-4 p-6 py-8">
-                  <div className="rounded-full bg-green-100 p-6 text-green-600">
-                    <CheckCircle2 className="h-12 w-12" />
-                  </div>
-                  <div className="text-center">
-                    <h3 className="text-lg font-medium">Thank You!</h3>
-                    <p className="text-muted-foreground">Your feedback has been submitted for {getEventName()}</p>
-                  </div>
-                  <div className="mt-4 flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2">
-                    <MessageSquare className="h-4 w-4" />
-                    <span className="text-sm font-medium">Your feedback is valuable to us</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="bg-gray-50 px-6 py-4">
-                  <Button variant="outline" className="w-full" onClick={resetForm}>
-                    Submit Another Feedback
-                  </Button>
-                </CardFooter>
-              </Card>
-            )}
-      </div>
+                </div>
+                
+                <h2 className="mb-2 text-2xl font-bold text-gray-900">Feedback Submitted!</h2>
+                <p className="mb-3 text-gray-600">Thank you for providing your feedback</p>
+              </div>
+              
+              <div className="p-6">
+                <Button 
+                  variant="outline" 
+                  className="w-full h-12 text-base font-bold" 
+                  onClick={resetForm}
+                  size="lg"
+                >
+                  Submit Another Feedback
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+    </div>
   )
 }
 
