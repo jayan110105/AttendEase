@@ -210,7 +210,7 @@ export function SignaturePad({ onChange, height = 200 }: SignaturePadProps) {
           type="button"
           size="sm"
           variant="ghost"
-          className="absolute bottom-2 right-2 h-8 w-8 rounded-full p-0"
+          className="absolute bottom-2 right-2 h-6 w-6 rounded-full p-0"
           onClick={clearSignature}
           title="Clear signature"
         >

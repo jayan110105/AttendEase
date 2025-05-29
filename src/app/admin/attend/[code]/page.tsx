@@ -12,8 +12,6 @@ import { Icon } from "@iconify/react"
 import { cn } from "@/lib/utils"
 
 export default function AttendEventPage() {
-  const params = useParams()
-  const eventCode = params.code as string
   const { toast } = useToast()
 
   const [step, setStep] = useState<"role" | "identification" | "verification" | "success">("role")
@@ -163,20 +161,6 @@ export default function AttendEventPage() {
     setIdentificationNumber("")
     setUserData(null)
     setSignature(null)
-  }
-
-  // Get event name from code (in a real app, this would come from the API)
-  const getEventName = () => {
-    switch (eventCode) {
-      case "ml-workshop":
-        return "Introduction to Machine Learning"
-      case "data-structures":
-        return "Advanced Data Structures"
-      case "web-dev":
-        return "Web Development Workshop"
-      default:
-        return `Event ${eventCode}`
-    }
   }
 
   return (
@@ -359,7 +343,7 @@ export default function AttendEventPage() {
               <div className="p-8">
                 <div className="space-y-6">
                   <div className="rounded-lg bg-gray-50 p-6">
-                    <div className="mb-4 flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                         {role === "faculty" && <Icon icon="solar:user-check-bold" className="h-6 w-6 text-primary" />}
                         {role === "student" && <Icon icon="solar:user-bold" className="h-6 w-6 text-primary" />}
@@ -371,40 +355,6 @@ export default function AttendEventPage() {
                           {role === "faculty" ? "MAHE ID: " : role === "student" ? "Reg No: " : "Phone: "}
                           {userData.idNumber}
                         </p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      {role === "faculty" && (
-                        <div>
-                          <p className="text-gray-500">Department</p>
-                          <p className="font-medium">{userData.department}</p>
-                        </div>
-                      )}
-                      {role === "student" && (
-                        <>
-                          <div>
-                            <p className="text-gray-500">Class</p>
-                            <p className="font-medium">{userData.class}</p>
-                          </div>
-                          <div>
-                            <p className="text-gray-500">Section</p>
-                            <p className="font-medium">{userData.section}</p>
-                          </div>
-                        </>
-                      )}
-                      {role === "guest" && (
-                        <div>
-                          <p className="text-gray-500">Phone</p>
-                          <p className="font-medium">{userData.phoneNumber}</p>
-                        </div>
-                      )}
-                      <div>
-                        <p className="text-gray-500">Date</p>
-                        <p className="font-medium">{new Date().toLocaleDateString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Time</p>
-                        <p className="font-medium">{new Date().toLocaleTimeString()}</p>
                       </div>
                     </div>
                   </div>
