@@ -37,7 +37,7 @@ export default function StaffEventsPage() {
     setTimeout(updateSlider, 10)
   }, [activeTab])
 
-  const [inProgressEvents, setInProgressEvents] = useState<InProgressEvent[]>([
+  const [inProgressEvents] = useState<InProgressEvent[]>([
     {
       title: "React Best Practices Workshop",
       startTime: new Date(2025, 0, 25, 9, 0), // Today 9:00 AM

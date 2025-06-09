@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { CheckCircle2, MessageSquare, Star } from "lucide-react"
+import { CheckCircle2, Star } from "lucide-react"
 
 export default function FeedbackPage() {
   const params = useParams()

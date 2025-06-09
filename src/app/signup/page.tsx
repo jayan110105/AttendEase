@@ -57,7 +57,7 @@ export default function SignupPage() {
       })
 
       router.push("/login")
-    } catch (error) {
+    } catch {
       toast({
         title: "Registration failed",
         description: "There was an error creating your account",
