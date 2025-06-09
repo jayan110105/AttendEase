@@ -14,7 +14,7 @@ interface SignaturePadProps {
 
 export function SignaturePad({ onChange, height = 200 }: SignaturePadProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [hasSignature, setHasSignature] = useState(false)
+  const [hasInitials, setHasInitials] = useState(false)
 
   // Use refs for drawing state to avoid issues with event handlers
   const isDrawingRef = useRef(false)
@@ -49,7 +49,7 @@ export function SignaturePad({ onChange, height = 200 }: SignaturePadProps) {
     // Reset state when component unmounts
     return () => {
       isDrawingRef.current = false
-      setHasSignature(false)
+      setHasInitials(false)
     }
   }, [])
 
@@ -139,8 +139,8 @@ export function SignaturePad({ onChange, height = 200 }: SignaturePadProps) {
     ctx.lineTo(x, y)
     ctx.stroke()
 
-    if (!hasSignature) {
-      setHasSignature(true)
+    if (!hasInitials) {
+      setHasInitials(true)
     }
   }
 
@@ -150,14 +150,14 @@ export function SignaturePad({ onChange, height = 200 }: SignaturePadProps) {
 
     isDrawingRef.current = false
 
-    // If there's a signature, pass the data URL to the parent
-    if (hasSignature) {
+    // If there are initials, pass the data URL to the parent
+    if (hasInitials) {
       const dataUrl = canvas.toDataURL("image/png")
       onChange(dataUrl)
     }
   }
 
-  const clearSignature = () => {
+  const clearInitials = () => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -168,7 +168,7 @@ export function SignaturePad({ onChange, height = 200 }: SignaturePadProps) {
     ctx.fillStyle = "#fff"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    setHasSignature(false)
+    setHasInitials(false)
     onChange(null)
   }
 
@@ -211,11 +211,11 @@ export function SignaturePad({ onChange, height = 200 }: SignaturePadProps) {
           size="sm"
           variant="ghost"
           className="absolute bottom-2 right-2 h-6 w-6 rounded-full p-0"
-          onClick={clearSignature}
-          title="Clear signature"
+          onClick={clearInitials}
+          title="Clear initials"
         >
           <Eraser className="h-4 w-4" />
-          <span className="sr-only">Clear signature</span>
+          <span className="sr-only">Clear initials</span>
         </Button>
       </div>
     </div>

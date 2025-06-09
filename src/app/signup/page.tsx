@@ -135,8 +135,8 @@ export default function SignupPage() {
                   <Label htmlFor="student">Student</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="faculty" id="faculty" />
-                  <Label htmlFor="faculty">Faculty</Label>
+                  <RadioGroupItem value="staff" id="staff" />
+                  <Label htmlFor="staff">Staff</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="guest" id="guest" />

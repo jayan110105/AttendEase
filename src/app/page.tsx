@@ -61,8 +61,8 @@ export default function Home() {
                   </Card>
                   <Card>
                     <CardHeader className="pb-2">
-                      <CardTitle>Faculty</CardTitle>
-                      <CardDescription>Create and manage workshops</CardDescription>
+                      <CardTitle>Staff</CardTitle>
+                      <CardDescription>For teaching and non-teaching staff</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm">Schedule events, track attendance, and view feedback.</p>

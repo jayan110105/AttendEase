@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useParams } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,7 +14,7 @@ export default function AttendEventPage() {
   const { toast } = useToast()
 
   const [step, setStep] = useState<"role" | "identification" | "verification" | "success">("role")
-  const [role, setRole] = useState<"faculty" | "student" | "guest" | "">("")
+  const [role, setRole] = useState<"staff" | "student" | "guest" | "">("")
   const [identificationNumber, setIdentificationNumber] = useState("")
   const [userData, setUserData] = useState<null | {
     name: string
@@ -25,23 +24,23 @@ export default function AttendEventPage() {
     section?: string
     phoneNumber?: string
   }>(null)
-  const [signature, setSignature] = useState<string | null>(null)
+  const [initials, setInitials] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const steps = [
     { id: 1, name: "Select Role", status: step === "role" ? "current" : (step === "identification" || step === "verification" || step === "success") ? "complete" : "upcoming" },
     { id: 2, name: "Enter ID", status: step === "identification" ? "current" : (step === "verification" || step === "success") ? "complete" : "upcoming" },
-    { id: 3, name: "Sign & Verify", status: step === "verification" ? "current" : step === "success" ? "complete" : "upcoming" },
+    { id: 3, name: "Draw & Verify", status: step === "verification" ? "current" : step === "success" ? "complete" : "upcoming" },
   ]
 
-  const handleRoleSelect = (selectedRole: "faculty" | "student" | "guest") => {
+  const handleRoleSelect = (selectedRole: "staff" | "student" | "guest") => {
     setRole(selectedRole)
     setStep("identification")
   }
 
   const getIdentificationLabel = () => {
     switch (role) {
-      case "faculty":
+      case "staff":
         return "MAHE ID"
       case "student":
         return "Registration Number"
@@ -54,7 +53,7 @@ export default function AttendEventPage() {
 
   const getIdentificationPlaceholder = () => {
     switch (role) {
-      case "faculty":
+      case "staff":
         return "Enter your MAHE ID"
       case "student":
         return "Enter your registration number"
@@ -87,7 +86,7 @@ export default function AttendEventPage() {
         idNumber: identificationNumber,
       }
 
-      if (role === "faculty") {
+      if (role === "staff") {
         mockData = {
           ...mockData,
           name: "Dr. Jane Smith",
@@ -122,15 +121,15 @@ export default function AttendEventPage() {
     }
   }
 
-  const handleSignatureChange = (signatureDataUrl: string | null) => {
-    setSignature(signatureDataUrl)
+  const handleInitialsChange = (initialsDataUrl: string | null) => {
+    setInitials(initialsDataUrl)
   }
 
   const handleSubmitAttendance = async () => {
-    if (!signature) {
+    if (!initials) {
       toast({
-        title: "Signature required",
-        description: "Please sign to confirm your attendance",
+        title: "Initials required",
+        description: "Please draw your initials to confirm your attendance",
         variant: "destructive",
       })
       return
@@ -160,7 +159,7 @@ export default function AttendEventPage() {
     setRole("")
     setIdentificationNumber("")
     setUserData(null)
-    setSignature(null)
+    setInitials(null)
   }
 
   return (
@@ -240,9 +239,9 @@ export default function AttendEventPage() {
               <Card 
                 className={cn(
                   "cursor-pointer border-2 transition-all hover:shadow-lg",
-                  role === "faculty" ? "border-primary bg-primary/10" : "border-gray-200"
+                  role === "staff" ? "border-primary bg-primary/10" : "border-gray-200"
                 )}
-                onClick={() => setRole("faculty")}
+                onClick={() => setRole("staff")}
               >
                 <CardContent className="p-8 text-center">
                   <div className="mb-4 flex justify-center">
@@ -250,8 +249,8 @@ export default function AttendEventPage() {
                       <Icon icon="solar:user-check-bold" className="h-8 w-8 text-primary" />
                     </div>
                   </div>
-                  <h3 className="mb-2 text-xl font-bold">Faculty</h3>
-                  <p className="text-gray-600">For teaching staff</p>
+                                      <h3 className="mb-2 text-xl font-bold">Staff</h3>
+                    <p className="text-gray-600">For teaching and non-teaching staff</p>
                 </CardContent>
               </Card>
 
@@ -336,7 +335,7 @@ export default function AttendEventPage() {
         {step === "verification" && userData && (
           <div className="w-full mx-auto max-w-xl">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900">Verify & Sign</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Verify & Draw Initials</h2>
             </div>
             
             <div>
@@ -345,14 +344,14 @@ export default function AttendEventPage() {
                   <div className="rounded-lg bg-gray-50 p-6">
                     <div className="flex items-center gap-3">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                        {role === "faculty" && <Icon icon="solar:user-check-bold" className="h-6 w-6 text-primary" />}
+                        {role === "staff" && <Icon icon="solar:user-check-bold" className="h-6 w-6 text-primary" />}
                         {role === "student" && <Icon icon="solar:user-bold" className="h-6 w-6 text-primary" />}
                         {role === "guest" && <Icon icon="solar:users-group-rounded-bold" className="h-6 w-6 text-primary" />}
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold">{userData.name}</h3>
                         <p className="text-sm text-gray-600">
-                          {role === "faculty" ? "MAHE ID: " : role === "student" ? "Reg No: " : "Phone: "}
+                          {role === "staff" ? "MAHE ID: " : role === "student" ? "Reg No: " : "Phone: "}
                           {userData.idNumber}
                         </p>
                       </div>
@@ -360,11 +359,11 @@ export default function AttendEventPage() {
                   </div>
 
                   <div>
-                    <Label className="text-base font-medium">Your Signature</Label>
+                    <Label className="text-base font-medium">Your Initials</Label>
                     <div className="mt-2 rounded-lg border bg-white p-2">
-                      <SignaturePad onChange={handleSignatureChange} />
+                      <SignaturePad onChange={handleInitialsChange} />
                     </div>
-                    <p className="mt-1 text-xs text-gray-500">Sign above to confirm your attendance</p>
+                    <p className="mt-1 text-xs text-gray-500">Draw your initials above to confirm your attendance</p>
                   </div>
                 </div>
               </div>
@@ -381,7 +380,7 @@ export default function AttendEventPage() {
                 <Button
                   className="bg-primary hover:bg-primary/90 h-12 text-base font-bold"
                   onClick={handleSubmitAttendance}
-                  disabled={isLoading || !signature}
+                  disabled={isLoading || !initials}
                   size="lg"
                 >
                   {isLoading ? "Submitting..." : "Mark Attendance"}

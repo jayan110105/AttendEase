@@ -18,6 +18,7 @@ import { format } from "date-fns"
 import { useState } from "react"
 import type { Event } from "@/types/event"
 import { Icon } from '@iconify/react';
+
 interface NewEventDialogProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
@@ -30,10 +31,10 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
   const [description, setDescription] = useState("")
   const [time, setTime] = useState("")
   const [location, setLocation] = useState("")
-  const [capacity, setCapacity] = useState("")
+  const [eventType, setEventType] = useState<"Department Meeting" | "Tech Talk" | "Workshop" | "">("")
 
   const handleCreateEvent = () => {
-    if (!title || !date || !time || !location || !capacity) {
+    if (!title || !date || !time || !location || !eventType) {
       alert("Please fill in all fields")
       return
     }
@@ -50,6 +51,7 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
       duration: "TBD",
       registeredCount: 0,
       location,
+      eventType,
     }
 
     onCreateEvent(newEvent)
@@ -59,7 +61,7 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
     setDate(undefined)
     setTime("")
     setLocation("")
-    setCapacity("")
+    setEventType("")
     onOpenChange(false)
   }
 
@@ -127,8 +129,17 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
               <Input className="py-2" id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Room/Hall" />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="capacity">Capacity</Label>
-              <Input className="py-2" id="capacity" type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} placeholder="Max participants" />
+              <Label>Event Type</Label>
+              <Select onValueChange={(value) => setEventType(value as "Department Meeting" | "Tech Talk" | "Workshop")}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Department Meeting">Department Meeting</SelectItem>
+                  <SelectItem value="Tech Talk">Tech Talk</SelectItem>
+                  <SelectItem value="Workshop">Workshop</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

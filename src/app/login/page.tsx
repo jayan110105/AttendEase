@@ -36,8 +36,8 @@ export default function LoginPage() {
       // For demo purposes, route to different dashboards based on email
       if (formData.email.includes("admin")) {
         router.push("/dashboard/admin")
-      } else if (formData.email.includes("faculty")) {
-        router.push("/dashboard/faculty")
+      } else if (formData.email.includes("staff")) {
+        router.push("/dashboard/staff")
       } else if (formData.email.includes("guest")) {
         router.push("/dashboard/guest")
       } else {
