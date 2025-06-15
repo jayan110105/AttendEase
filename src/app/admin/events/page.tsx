@@ -8,6 +8,8 @@ import { PastEventCard } from "@/components/events/PastEventCard"
 import { InProgressEventCard } from "@/components/events/InProgressEventCard"
 import { NewEventDialog } from "@/components/events/NewEventDialog"
 import { FeedbackQRDialog } from "@/components/events/FeedbackQRDialog"
+import { authClient } from "@/lib/auth-client"
+import { type Role } from "@/lib/roles"
 
 export default function StaffEventsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -15,6 +17,7 @@ export default function StaffEventsPage() {
   const [selectedEvent, setSelectedEvent] = useState("")
   const [activeTab, setActiveTab] = useState("inprogress")
   const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0 })
+  const [userRole, setUserRole] = useState<Role | undefined>(undefined)
   
   const inProgressRef = useRef<HTMLButtonElement>(null)
   const upcomingRef = useRef<HTMLButtonElement>(null)
@@ -36,6 +39,24 @@ export default function StaffEventsPage() {
     // Add a small delay to ensure DOM is updated
     setTimeout(updateSlider, 10)
   }, [activeTab])
+
+  // Fetch user role when component mounts
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const sessionData = await authClient.getSession()
+        if (sessionData?.data?.user) {
+          const user = sessionData.data.user as { role?: Role }
+          console.log("user role", user.role);
+          setUserRole(user.role)
+        }
+      } catch (error) {
+        console.error("Failed to fetch user session:", error)
+      }
+    }
+    
+    void fetchUser()
+  }, [])
 
   const [inProgressEvents] = useState<InProgressEvent[]>([
     {
@@ -120,6 +141,7 @@ export default function StaffEventsPage() {
             isOpen={isDialogOpen}
             onOpenChange={setIsDialogOpen}
             onCreateEvent={handleCreateEvent}
+            userRole={userRole}
           />
         </div>
 
@@ -160,7 +182,7 @@ export default function StaffEventsPage() {
           <TabsContent value="inprogress" className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {inProgressEvents.map((event, index) => (
-                <InProgressEventCard key={index} event={event} onSelectFeedbackQR={handleFeedbackQR}/>
+                <InProgressEventCard key={index} event={event} onSelectFeedbackQR={handleFeedbackQR} userRole={userRole}/>
               ))}
             </div>
             {inProgressEvents.length === 0 && (
@@ -175,7 +197,7 @@ export default function StaffEventsPage() {
               {upcomingEvents
                 .sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
                 .map((event, index) => (
-                  <EventCard key={index} event={event} onSelectFeedbackQR={handleFeedbackQR}/>
+                  <EventCard key={index} event={event} onSelectFeedbackQR={handleFeedbackQR} userRole={userRole}/>
                 ))}
             </div>
           </TabsContent>

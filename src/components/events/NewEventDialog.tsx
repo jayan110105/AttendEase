@@ -18,14 +18,16 @@ import { format } from "date-fns"
 import { useState } from "react"
 import type { Event } from "@/types/event"
 import { Icon } from '@iconify/react';
+import { isAdmin } from "@/lib/roles";
 
 interface NewEventDialogProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onCreateEvent: (event: Event) => void
+  userRole?: string
 }
 
-export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEventDialogProps) => {
+export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent, userRole }: NewEventDialogProps) => {
   const [date, setDate] = useState<Date>()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -63,6 +65,11 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent }: NewEvent
     setLocation("")
     setEventType("")
     onOpenChange(false)
+  }
+
+  // Only show dialog if user is admin
+  if (!isAdmin(userRole)) {
+    return null;
   }
 
   return (

@@ -7,13 +7,15 @@ import Link from "next/link"
 import type { Event } from "@/types/event"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { isAdmin } from "@/lib/roles"
 
 interface EventCardProps {
   event: Event
   onSelectFeedbackQR: (title: string) => void
+  userRole?: string
 }
 
-export const EventCard = ({ event, onSelectFeedbackQR }: EventCardProps) => {
+export const EventCard = ({ event, onSelectFeedbackQR, userRole }: EventCardProps) => {
   return (
     <Card className="relative rounded-lg border p-4">
       <DropdownMenu>
@@ -28,14 +30,18 @@ export const EventCard = ({ event, onSelectFeedbackQR }: EventCardProps) => {
                 <Icon icon="solar:eye-bold" className="mr-2 h-4 w-4" />
                 View
             </DropdownMenuItem>
-            <DropdownMenuItem>
-                <Icon icon="solar:pen-bold" className="mr-2 h-4 w-4" />
-                Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive hover:text-destructive focus:text-destructive">
-                <Icon icon="solar:trash-bin-trash-bold" className="mr-2 h-4 w-4" />
-                Cancel
-            </DropdownMenuItem>
+            {isAdmin(userRole) && (
+              <>
+                <DropdownMenuItem>
+                    <Icon icon="solar:pen-bold" className="mr-2 h-4 w-4" />
+                    Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive hover:text-destructive focus:text-destructive">
+                    <Icon icon="solar:trash-bin-trash-bold" className="mr-2 h-4 w-4" />
+                    Cancel
+                </DropdownMenuItem>
+              </>
+            )}
         </DropdownMenuContent>
       </DropdownMenu>  
       <CardHeader className="flex flex-col items-start space-y-2 p-4">

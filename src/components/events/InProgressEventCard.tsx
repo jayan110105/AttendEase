@@ -7,13 +7,15 @@ import Link from "next/link"
 import type { InProgressEvent } from "@/types/event"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { isAdmin } from "@/lib/roles"
 
 interface InProgressEventCardProps {
   event: InProgressEvent
   onSelectFeedbackQR: (title: string) => void
+  userRole?: string
 }
 
-export const InProgressEventCard = ({ event, onSelectFeedbackQR }: InProgressEventCardProps) => {
+export const InProgressEventCard = ({ event, onSelectFeedbackQR, userRole }: InProgressEventCardProps) => {
   const attendancePercentage = Math.round((event.attendeesPresent / event.totalRegistered) * 100)
 
   return (
@@ -30,14 +32,18 @@ export const InProgressEventCard = ({ event, onSelectFeedbackQR }: InProgressEve
                 <Icon icon="solar:eye-bold" className="mr-2 h-4 w-4" />
                 View
             </DropdownMenuItem>
-            <DropdownMenuItem>
-                <Icon icon="solar:pen-bold" className="mr-2 h-4 w-4" />
-                Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive hover:text-destructive focus:text-destructive">
-                <Icon icon="solar:stop-bold" className="mr-2 h-4 w-4" />
-                End Event
-            </DropdownMenuItem>
+            {isAdmin(userRole) && (
+              <>
+                <DropdownMenuItem>
+                    <Icon icon="solar:pen-bold" className="mr-2 h-4 w-4" />
+                    Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive hover:text-destructive focus:text-destructive">
+                    <Icon icon="solar:stop-bold" className="mr-2 h-4 w-4" />
+                    End Event
+                </DropdownMenuItem>
+              </>
+            )}
         </DropdownMenuContent>
       </DropdownMenu>  
 

@@ -49,20 +49,22 @@ export default function SignupPage() {
     }
 
     try {
-      // Better Auth signup - role will be set to default from schema
+      // Better Auth signup with role
       const { data, error } = await signUp.email({
         email: formData.email,
         password: formData.password,
         name: formData.name,
-        callbackURL: "/login"
+        callbackURL: "/login",
+        fetchOptions: {
+          body: {
+            role: formData.role
+          }
+        }
       });
 
       if (error) {
         throw new Error(error.message)
       }
-
-      // TODO: After signup, we may need to update the user role via a separate API call
-      // For now, role defaults to "staff" from schema configuration
 
       toast({
         title: "Account created",
