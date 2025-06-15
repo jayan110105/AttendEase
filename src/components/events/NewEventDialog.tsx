@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -18,57 +20,109 @@ import { format } from "date-fns"
 import { useState } from "react"
 import type { Event } from "@/types/event"
 import { Icon } from '@iconify/react';
-import { isAdmin } from "@/lib/roles";
+import { canCreateEvents } from "@/lib/roles"
+import { useToast } from "@/hooks/use-toast"
+import type { RoleName } from "@/server/db/schema"
 
 interface NewEventDialogProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   onCreateEvent: (event: Event) => void
-  userRole?: string
+  userRole?: RoleName
 }
 
 export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent, userRole }: NewEventDialogProps) => {
+  const { toast } = useToast()
   const [date, setDate] = useState<Date>()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [time, setTime] = useState("")
   const [location, setLocation] = useState("")
   const [eventType, setEventType] = useState<"Department Meeting" | "Tech Talk" | "Workshop" | "">("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     if (!title || !date || !time || !location || !eventType) {
-      alert("Please fill in all fields")
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      })
       return
     }
 
-    const eventDateTime = new Date(date)
-    const timeParts = time.split(":").map(Number)
-    const hours = timeParts[0] ?? 0
-    const minutes = timeParts[1] ?? 0
-    eventDateTime.setHours(hours, minutes)
+    setIsSubmitting(true)
 
-    const newEvent: Event = {
-      title,
-      datetime: eventDateTime,
-      duration: "TBD",
-      registeredCount: 0,
-      location,
-      eventType,
+    try {
+      const eventDateTime = new Date(date)
+      const timeParts = time.split(":").map(Number)
+      const hours = timeParts[0] ?? 0
+      const minutes = timeParts[1] ?? 0
+      eventDateTime.setHours(hours, minutes)
+
+      // Map frontend event types to database event types
+      const dbEventType = eventType === "Department Meeting" ? "department-meeting" :
+                         eventType === "Tech Talk" ? "techtalk" : "workshop"
+
+      // Save to database via API
+      const response = await fetch("/api/events/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          eventDate: eventDateTime.toISOString(),
+          eventType: dbEventType,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json() as { error: string }
+        throw new Error(error.error)
+      }
+
+      // Create frontend event object for immediate UI update
+      const newEvent: Event = {
+        title,
+        datetime: eventDateTime,
+        duration: "2 hours",
+        registeredCount: 0,
+        location,
+        eventType,
+      }
+
+      onCreateEvent(newEvent)
+
+      toast({
+        title: "Event created",
+        description: `${title} has been successfully created`,
+      })
+
+      // Reset form
+      setTitle("")
+      setDescription("")
+      setDate(undefined)
+      setTime("")
+      setLocation("")
+      setEventType("")
+      onOpenChange(false)
+
+    } catch (error) {
+      console.error("Error creating event:", error)
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to create event. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
     }
-
-    onCreateEvent(newEvent)
-
-    setTitle("")
-    setDescription("")
-    setDate(undefined)
-    setTime("")
-    setLocation("")
-    setEventType("")
-    onOpenChange(false)
   }
 
-  // Only show dialog if user is admin
-  if (!isAdmin(userRole)) {
+  // Only show dialog if user can create events (HOD or Admin)
+  if (!userRole || !canCreateEvents(userRole)) {
     return null;
   }
 
@@ -96,7 +150,7 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent, userRole }
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>Date</Label>
-              <Popover>
+              <Popover modal>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -151,7 +205,14 @@ export const NewEventDialog = ({ isOpen, onOpenChange, onCreateEvent, userRole }
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" onClick={handleCreateEvent} className="font-medium py-5">Create</Button>
+          <Button 
+            type="button" 
+            onClick={handleCreateEvent} 
+            className="font-medium py-5"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Creating..." : "Create"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -15,15 +15,27 @@ import SettingIcon from "@/components/icons/SettingIcon"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import AppSidebar from "@/components/app-sidebar"
 import { LogoutButton } from "@/components/logout-button"
-import { getCurrentUser } from "@/lib/auth-actions"
+import { getCurrentUserWithEmployee, autoLinkUserByEmail } from "@/lib/auth-actions"
+import { getRoleDisplayName } from "@/lib/roles"
+import { getHighestRole } from "@/lib/employee-service"
 
 interface DashboardLayoutProps {
   children: ReactNode
-  role: "admin"
 }
 
 export default async function DashboardLayout({ children}: DashboardLayoutProps) {
-  const user = await getCurrentUser();
+  const userEmployee = await getCurrentUserWithEmployee();
+  
+  // Try to auto-link user to employee if not already linked
+  if (userEmployee && !userEmployee.employee) {
+    await autoLinkUserByEmail();
+    // Note: We could refetch here, but for now we'll just show the user info
+  }
+
+  const user = userEmployee?.user;
+  const employee = userEmployee?.employee;
+  const userRole = userEmployee ? getHighestRole(userEmployee.roles) : undefined;
+  const roleDisplayName = userRole ? getRoleDisplayName(userRole) : "User";
 
   return (
     <SidebarProvider>
@@ -39,9 +51,11 @@ export default async function DashboardLayout({ children}: DashboardLayoutProps)
                     <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="p-0 rounded-full">
                         <Avatar className="h-10 w-10">
-                        <AvatarImage src={user?.image ?? "/placeholder.svg?height=32&width=32"} alt="User" />
+                        <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
                         <AvatarFallback>
-                          {user?.name 
+                          {employee?.firstName && employee?.lastName
+                            ? `${employee.firstName[0]}${employee.lastName[0]}`.toUpperCase()
+                            : user?.name 
                             ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
                             : 'U'
                           }

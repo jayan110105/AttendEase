@@ -17,10 +17,9 @@ export const auth = betterAuth({
   },
   user: {
     additionalFields: {
-      role: {
+      employeeId: {
         type: "string",
-        defaultValue: "staff",
-        required: true,
+        required: false, // Not all users may be employees initially
       },
     },
   },

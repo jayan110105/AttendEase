@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
 import { signUp } from "@/lib/auth-client"
 
@@ -22,16 +21,11 @@ export default function SignupPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "staff",
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleRoleChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, role: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,17 +43,12 @@ export default function SignupPage() {
     }
 
     try {
-      // Better Auth signup with role
+      // Better Auth signup - no role needed, will be determined by employee link
       const { data, error } = await signUp.email({
         email: formData.email,
         password: formData.password,
         name: formData.name,
         callbackURL: "/login",
-        fetchOptions: {
-          body: {
-            role: formData.role
-          }
-        }
       });
 
       if (error) {
@@ -68,7 +57,7 @@ export default function SignupPage() {
 
       toast({
         title: "Account created",
-        description: `Your account has been created successfully. Please login to continue.`,
+        description: `Your account has been created successfully. Please login to continue. If you are an employee, your account will be automatically linked to your employee profile upon login.`,
       })
 
       router.push("/login")
@@ -137,24 +126,6 @@ export default function SignupPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />
-            </div>
-            <div className="space-y-2">
-              <Label>Role</Label>
-              <RadioGroup
-                defaultValue="staff"
-                value={formData.role}
-                onValueChange={handleRoleChange}
-                className="flex flex-col space-y-1"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="admin" id="admin" />
-                  <Label htmlFor="admin">Admin</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="staff" id="staff" />
-                  <Label htmlFor="staff">Staff</Label>
-                </div>
-              </RadioGroup>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
