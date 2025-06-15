@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
+import { signUp } from "@/lib/auth-client"
 
 export default function SignupPage() {
   const router = useRouter()
@@ -21,7 +22,7 @@ export default function SignupPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "student",
+    role: "staff",
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,19 +49,32 @@ export default function SignupPage() {
     }
 
     try {
-      // Simulate registration
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Better Auth signup - role will be set to default from schema
+      const { data, error } = await signUp.email({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        callbackURL: "/login"
+      });
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      // TODO: After signup, we may need to update the user role via a separate API call
+      // For now, role defaults to "staff" from schema configuration
 
       toast({
         title: "Account created",
-        description: "Your account has been created successfully",
+        description: `Your account has been created successfully. Please login to continue.`,
       })
 
       router.push("/login")
-    } catch {
+    } catch (error) {
+      console.error(error)
       toast({
         title: "Registration failed",
-        description: "There was an error creating your account",
+        description: error instanceof Error ? error.message : "There was an error creating your account",
         variant: "destructive",
       })
     } finally {
@@ -125,22 +139,18 @@ export default function SignupPage() {
             <div className="space-y-2">
               <Label>Role</Label>
               <RadioGroup
-                defaultValue="student"
+                defaultValue="staff"
                 value={formData.role}
                 onValueChange={handleRoleChange}
                 className="flex flex-col space-y-1"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="student" id="student" />
-                  <Label htmlFor="student">Student</Label>
+                  <RadioGroupItem value="admin" id="admin" />
+                  <Label htmlFor="admin">Admin</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="staff" id="staff" />
                   <Label htmlFor="staff">Staff</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="guest" id="guest" />
-                  <Label htmlFor="guest">Guest Speaker/Alumni</Label>
                 </div>
               </RadioGroup>
             </div>

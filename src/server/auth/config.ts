@@ -1,67 +1,31 @@
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 import { db } from "@/server/db";
-import {
-  accounts,
-  sessions,
-  users,
-  verificationTokens,
-} from "@/server/db/schema";
+import { env } from "@/env";
 
-/**
- * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
- * object and keep type safety.
- *
- * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
- */
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
-  }
-
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
-}
-
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
-export const authConfig = {
-  providers: [
-    DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-  ],
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    usePlural: true, // Since our tables use plural naming (users, accounts, etc.)
   }),
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+  secret: env.AUTH_SECRET,
+  baseURL: env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: false, // Set to true if you want to require email verification
   },
-} satisfies NextAuthConfig;
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        defaultValue: "staff",
+        required: true,
+      },
+    },
+  },
+  session: {
+    updateAge: 24 * 60 * 60, // 24 hours
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+  },
+});

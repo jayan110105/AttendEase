@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -15,13 +14,16 @@ import ProfileIcon from "@/components/icons/ProfileIcon"
 import SettingIcon from "@/components/icons/SettingIcon"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import AppSidebar from "@/components/app-sidebar"
+import { LogoutButton } from "@/components/logout-button"
+import { getCurrentUser } from "@/lib/auth-actions"
 
 interface DashboardLayoutProps {
   children: ReactNode
   role: "admin"
 }
 
-export default function DashboardLayout({ children}: DashboardLayoutProps) {
+export default async function DashboardLayout({ children}: DashboardLayoutProps) {
+  const user = await getCurrentUser();
 
   return (
     <SidebarProvider>
@@ -37,17 +39,22 @@ export default function DashboardLayout({ children}: DashboardLayoutProps) {
                     <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="p-0 rounded-full">
                         <Avatar className="h-10 w-10">
-                        <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                        <AvatarFallback>JD</AvatarFallback>
+                        <AvatarImage src={user?.image ?? "/placeholder.svg?height=32&width=32"} alt="User" />
+                        <AvatarFallback>
+                          {user?.name 
+                            ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+                            : 'U'
+                          }
+                        </AvatarFallback>
                         </Avatar>
                     </Button>
                     </DropdownMenuTrigger>
 
-                    <DropdownMenuContent align="end" forceMount className = "[&_svg]:size-6">
+                    <DropdownMenuContent align="end" forceMount className = "[&_svg]:size-6 min-w-[200px]">
                         <DropdownMenuLabel className="font-normal px-6">
                             <div className="flex flex-col items-center space-y-1">
-                            <p className="text-base font-medium">John Doe</p>
-                            <p className="text-sm text-muted-foreground">john@example.com</p>
+                            <p className="text-base font-medium">{user?.name ?? "User"}</p>
+                            <p className="text-sm text-muted-foreground">{user?.email ?? "No email"}</p>
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
@@ -61,11 +68,12 @@ export default function DashboardLayout({ children}: DashboardLayoutProps) {
                             Settings
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <Link href="/login" className="rounded-lg py-3 w-full flex justify-center items-center bg-red-100 text-red-600 font-bold hover:bg-red-200 transition-colors 
-          duration-200">
-                                Logout
-                            </Link>
+                        <DropdownMenuItem asChild>
+                            <div className="w-full px-2">
+                                <LogoutButton className="rounded-lg py-3 w-full flex justify-center items-center bg-red-100 text-red-600 font-bold hover:bg-red-200 transition-colors duration-200">
+                                    Logout
+                                </LogoutButton>
+                            </div>        
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

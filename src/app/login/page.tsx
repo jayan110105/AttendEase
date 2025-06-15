@@ -3,16 +3,18 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
+import { signIn } from "@/lib/auth-client"
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -30,29 +32,31 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      // Simulate authentication
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const { data, error } = await signIn.email({
+        email: formData.email,
+        password: formData.password,
+      })
 
-      // For demo purposes, route to different dashboards based on email
-      if (formData.email.includes("admin")) {
-        router.push("/dashboard/admin")
-      } else if (formData.email.includes("staff")) {
-        router.push("/dashboard/staff")
-      } else if (formData.email.includes("guest")) {
-        router.push("/dashboard/guest")
-      } else {
-        router.push("/dashboard/student")
+      if (error) {
+        throw new Error(error.message)
       }
 
       toast({
         title: "Login successful",
         description: "Welcome back to the Attendance System",
       })
+
+      // Redirect back to the original page or dashboard
+      const redirectTo = searchParams.get('from') ?? '/admin'
+
+      console.log("redirectTo", redirectTo);
+      router.push(redirectTo)
+      router.refresh()
     } catch (error) {
       console.error(error)
       toast({
         title: "Login failed",
-        description: "Please check your credentials and try again",
+        description: error instanceof Error ? error.message : "Please check your credentials and try again",
         variant: "destructive",
       })
     } finally {
@@ -92,7 +96,7 @@ export default function LoginPage() {
                 id="password"
                 name="password"
                 type="password"
-                // required
+                required
                 value={formData.password}
                 onChange={handleChange}
               />
