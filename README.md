@@ -1,29 +1,59 @@
-# Create T3 App
+# AttendEase
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+AttendEase is a minimal and modern attendance management system built with the T3 stack, featuring QR code-based attendance tracking and an insights dashboard.
 
-## What's next? How do I make an app with this?
+## Key Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- **QR Code-Based Attendance:** Effortlessly mark attendance by scanning a unique QR code for each event.
+- **Admin Dashboard:** A comprehensive dashboard for administrators to manage events, view attendance data, and gain insights.
+- **User-Friendly Interface:** A clean and intuitive UI for a seamless user experience.
+- **Event Management:** Easily create, update, and manage events.
+- **Secure Authentication:** Built-in authentication to protect user data.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Tech Stack
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Framework:** [Next.js](https://nextjs.org/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **ORM:** [Drizzle ORM](https://orm.drizzle.team/)
+- **Authentication:** [Better Auth](https://www.better-auth.com/)
+- **Database:** [Postgres](https://www.postgresql.org/)
 
-## Learn More
+## Getting Started
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+To get a local copy up and running, follow these simple steps.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### Prerequisites
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Make sure you have Node.js and npm installed on your machine.
 
-## How do I deploy this?
+- npm
+  ```sh
+  npm install npm@latest -g
+  ```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/jayan110105/attendeaseMinimal.git
+   ```
+2. Install NPM packages
+   ```sh
+   npm install
+   ```
+3. Set up your environment variables by creating a `.env` file in the root of your project.
+   ```env
+   # Example .env file
+   DATABASE_URL="your_postgres_database_url"
+   BETTER_AUTH_SECRET="your_better_auth_secret"
+   BETTER_AUTH_URL="http://localhost:3000"
+   ```
+4. Push the database schema using Drizzle
+   ```sh
+   npm run db:push
+   ```
+5. Run the development server
+   ```sh
+   npm run dev
+   ```
